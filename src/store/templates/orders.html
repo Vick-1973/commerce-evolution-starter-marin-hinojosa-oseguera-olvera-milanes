@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Orders · {{ config.STORE_NAME }}{% endblock %}
+{% block content %}
+<div class="section-heading"><div><p class="eyebrow">PERSISTED DATA</p><h1>Orders</h1></div></div>
+{% if orders %}
+<div class="order-list">
+{% for order in orders %}
+<a class="order-list-row" href="{{ url_for('orders.order_detail', order_id=order.id) }}"><span><strong>Order #{{ order.id }}</strong><small>{{ order.customer_name }} · {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</small></span><span>{{ order.total_cents|money }}</span></a>
+{% endfor %}
+</div>
+{% else %}<div class="empty-state"><h2>No orders yet.</h2><p>Complete a checkout to create the first persisted order.</p></div>{% endif %}
+{% endblock %}

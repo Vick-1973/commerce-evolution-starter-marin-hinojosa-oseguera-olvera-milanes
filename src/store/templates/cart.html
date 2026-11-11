@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Cart · {{ config.STORE_NAME }}{% endblock %}
+{% block content %}
+<div class="section-heading"><div><p class="eyebrow">YOUR CART</p><h1>Cart</h1></div></div>
+{% if lines %}
+<div class="cart-layout">
+  <section class="card-table">
+  {% for line in lines %}
+    <div class="cart-row">
+      <img src="{{ line.product.image_url }}" alt="">
+      <div class="grow"><strong>{{ line.product.name }}</strong><small>{{ line.product.sku }} · {{ line.product.price_cents|money }} each</small></div>
+      <form method="post" action="{{ url_for('cart.update', product_id=line.product.id) }}" class="qty-form">
+        <input type="number" min="0" name="quantity" value="{{ line.quantity }}"><button class="secondary">Update</button>
+      </form>
+      <strong>{{ line.line_total_cents|money }}</strong>
+      <form method="post" action="{{ url_for('cart.remove', product_id=line.product.id) }}"><button class="ghost">Remove</button></form>
+    </div>
+  {% endfor %}
+  </section>
+  <aside class="summary-card"><p>Subtotal</p><h2>{{ subtotal_cents|money }}</h2><p class="muted">Shipping is calculated at checkout.</p><a class="button" href="{{ url_for('checkout.checkout_form') }}">Continue to checkout</a></aside>
+</div>
+{% else %}
+<div class="empty-state"><h2>Your cart is empty.</h2><p>Add something from the catalog to continue.</p><a class="button" href="{{ url_for('catalog.catalog') }}">Browse products</a></div>
+{% endif %}
+{% endblock %}

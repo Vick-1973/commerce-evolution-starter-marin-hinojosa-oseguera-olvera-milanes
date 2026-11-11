@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }} · {{ config.STORE_NAME }}{% endblock %}
+{% block content %}
+<section class="order-hero"><p class="eyebrow">ORDER CONFIRMED</p><h1>Order #{{ order.id }}</h1><p>Thanks, {{ order.customer_name }}. Your order is persisted and ready for the next step.</p></section>
+<div class="order-grid">
+<section class="card-table">
+  {% for item in order.items %}
+  <div class="summary-line"><span>{{ item.quantity }} × {{ item.product_name }} <small>{{ item.sku }}</small></span><span>{{ (item.unit_price_cents * item.quantity)|money }}</span></div>
+  {% endfor %}
+  <hr>
+  <div class="summary-line"><span>Subtotal</span><span>{{ order.subtotal_cents|money }}</span></div>
+  <div class="summary-line"><span>Standard shipping</span><span>{{ order.shipping_cents|money }}</span></div>
+  <div class="summary-line total"><span>Total</span><span>{{ order.total_cents|money }}</span></div>
+</section>
+<aside class="summary-card"><h3>Details</h3><p><strong>{{ order.customer_email }}</strong></p><p>{{ order.shipping_address }}</p><p class="muted">Payment: {{ order.payment_reference }}<br>Status: {{ order.status }}</p></aside>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ config.STORE_NAME }} · Catalog{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">STARTER STOREFRONT</p>
+    <h1>A small store built to evolve.</h1>
+    <p>Browse the baseline catalog, place an order, then make this product your team's own.</p>
+  </div>
+</section>
+<section>
+  <div class="section-heading">
+    <div><p class="eyebrow">CATALOG</p><h2>Products</h2></div>
+    <span>{{ products|length }} items</span>
+  </div>
+  <div class="product-grid">
+    {% for product in products %}
+    <article class="product-card">
+      <a href="{{ url_for('catalog.product_detail', product_id=product.id) }}">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+      </a>
+      <div class="product-card-body">
+        <div class="product-meta"><span>{{ product.sku }}</span><span>{{ product.stock_quantity }} in stock</span></div>
+        <h3><a href="{{ url_for('catalog.product_detail', product_id=product.id) }}">{{ product.name }}</a></h3>
+        <p>{{ product.description }}</p>
+        <div class="product-actions">
+          <strong>{{ product.price_cents|money }}</strong>
+          <form method="post" action="{{ url_for('cart.add', product_id=product.id) }}"><button>Add to cart</button></form>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

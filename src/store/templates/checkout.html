@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Checkout · {{ config.STORE_NAME }}{% endblock %}
+{% block content %}
+<div class="section-heading"><div><p class="eyebrow">CHECKOUT</p><h1>Complete your order</h1></div></div>
+<div class="checkout-layout">
+<form method="post" class="form-card">
+  <label>Name<input required name="customer_name" autocomplete="name"></label>
+  <label>Email<input required type="email" name="customer_email" autocomplete="email"></label>
+  <label>Shipping address<textarea required name="shipping_address" rows="4"></textarea></label>
+  <label>Test payment token<input required name="payment_token" value="tok_success"><small>Use <code>tok_fail</code> to simulate a declined payment.</small></label>
+  <button>Place order</button>
+</form>
+<aside class="summary-card">
+  <h3>Order summary</h3>
+  {% for line in lines %}<div class="summary-line"><span>{{ line.quantity }} × {{ line.product.name }}</span><span>{{ line.line_total_cents|money }}</span></div>{% endfor %}
+  <hr><div class="summary-line"><span>Subtotal</span><span>{{ subtotal_cents|money }}</span></div>
+  <div class="summary-line"><span>Standard shipping</span><span>{{ shipping_cents|money }}</span></div>
+  <div class="summary-line total"><span>Total</span><span>{{ total_cents|money }}</span></div>
+</aside>
+</div>
+{% endblock %}

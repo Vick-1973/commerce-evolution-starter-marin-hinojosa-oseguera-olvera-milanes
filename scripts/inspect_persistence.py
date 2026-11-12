@@ -1,4 +1,4 @@
-"""Read-only CLI evidence of actual BANVO database state; does not modify it.
+"""Reads-only CLI evidence of actual BANVO database state; does not modify it.
 
 Run from repo root: `python scripts/inspect_persistence.py`
 Use before and after a purchase and after restarting Flask.

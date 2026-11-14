@@ -1,31 +1,32 @@
 {% extends "base.html" %}
-{% block title %}{{ config.STORE_NAME }} · Catalog{% endblock %}
+{% block title %}{{ config.STORE_NAME }} · Electronics{% endblock %}
 {% block content %}
 <section class="hero">
   <div>
-    <p class="eyebrow">STARTER STOREFRONT</p>
-    <h1>A small store built to evolve.</h1>
-    <p>Browse the baseline catalog, place an order, then make this product your team's own.</p>
+    <p class="eyebrow">WELCOME TO BANVO</p>
+    <h1>Tech that moves with you.</h1>
+    <p>Discover thoughtfully selected laptops, audio gear, monitors, and smart accessories. Everything you need for your next setup.</p>
+    <a href="#catalog" class="button hero-cta">Explore electronics</a>
   </div>
 </section>
-<section>
+<section id="catalog">
   <div class="section-heading">
-    <div><p class="eyebrow">CATALOG</p><h2>Products</h2></div>
-    <span>{{ products|length }} items</span>
+    <div><p class="eyebrow">THE BANVO COLLECTION</p><h2>Discover your next upgrade</h2></div>
+    <span>{{ products|length }} products</span>
   </div>
   <div class="product-grid">
     {% for product in products %}
     <article class="product-card">
       <a href="{{ url_for('catalog.product_detail', product_id=product.id) }}">
-        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
       </a>
       <div class="product-card-body">
-        <div class="product-meta"><span>{{ product.sku }}</span><span>{{ product.stock_quantity }} in stock</span></div>
+        <div class="product-meta"><span>{{ product.sku }}</span><span>{{ product.stock_quantity }} available</span></div>
         <h3><a href="{{ url_for('catalog.product_detail', product_id=product.id) }}">{{ product.name }}</a></h3>
         <p>{{ product.description }}</p>
         <div class="product-actions">
-          <strong>{{ product.price_cents|money }}</strong>
-          <form method="post" action="{{ url_for('cart.add', product_id=product.id) }}"><button>Add to cart</button></form>
+          <strong>{{ product.price_cents | money }}</strong>
+          <form method="post" action="{{ url_for('cart.add', product_id=product.id) }}"><button type="submit">Add to cart</button></form>
         </div>
       </div>
     </article>

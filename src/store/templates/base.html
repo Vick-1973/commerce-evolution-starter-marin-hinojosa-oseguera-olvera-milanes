@@ -3,30 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09142a">
   <title>{% block title %}{{ config.STORE_NAME }}{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/banvo.css') }}">
 </head>
 <body>
-<header class="site-header">
-  <a class="brand" href="{{ url_for('catalog.catalog') }}">{{ config.STORE_NAME }}</a>
-  <nav>
-    <a href="{{ url_for('catalog.catalog') }}">Shop</a>
-    <a href="{{ url_for('cart.view_cart') }}">Cart</a>
-    <a href="{{ url_for('orders.order_history') }}">Orders</a>
-  </nav>
-</header>
-<main class="page-shell">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flash-stack">
-      {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  {% block content %}{% endblock %}
-</main>
-<footer class="site-footer">ITESO Software Design · Commerce Evolution baseline</footer>
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('catalog.catalog') }}"><span class="brand-mark" aria-hidden="true">B</span>{{ config.STORE_NAME }}</a>
+    <nav aria-label="Main navigation">
+      <a href="{{ url_for('catalog.catalog') }}">Shop</a>
+      <a href="{{ url_for('cart.view_cart') }}">Cart</a>
+      <a href="{{ url_for('orders.order_history') }}">Orders</a>
+    </nav>
+  </header>
+  <main class="page-shell">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer"><strong>BANVO</strong> · Electronics for what comes next · ITESO academic project</footer>
 </body>
 </html>

@@ -2,7 +2,7 @@
 
 **Project:** BANVO — Electronics E-commerce
 **Public team repository:** https://github.com/Vick-1973/commerce-evolution-starter-marin-hinojosa-oseguera-olvera-milanes
-**Team members:** [Insert the five actual names before submission]
+**Team members:** VERONICA PAOLA HINOJOSA FERADO, NATHALIE MARIN LOPEZ, BRAULIO MILANES LOZA, OSWALDO OSEGUERA SANDOVAL, ANDRES ALFONSO OLVERA GONZALEZ
 **Status:** Locally implemented and tested; GitHub Actions/PR evidence must be captured after the team pushes the changes.
 
 ## 1. Change Request

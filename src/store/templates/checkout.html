@@ -3,19 +3,74 @@
 {% block content %}
 <div class="section-heading"><div><p class="eyebrow">CHECKOUT</p><h1>Complete your order</h1></div></div>
 <div class="checkout-layout">
-<form method="post" class="form-card">
-  <label>Name<input required name="customer_name" autocomplete="name"></label>
-  <label>Email<input required type="email" name="customer_email" autocomplete="email"></label>
-  <label>Shipping address<textarea required name="shipping_address" rows="4"></textarea></label>
-  <label>Test payment token<input required name="payment_token" value="tok_success"><small>Use <code>tok_fail</code> to simulate a declined payment.</small></label>
-  <button>Place order</button>
-</form>
-<aside class="summary-card">
-  <h3>Order summary</h3>
-  {% for line in lines %}<div class="summary-line"><span>{{ line.quantity }} × {{ line.product.name }}</span><span>{{ line.line_total_cents|money }}</span></div>{% endfor %}
-  <hr><div class="summary-line"><span>Subtotal</span><span>{{ subtotal_cents|money }}</span></div>
-  <div class="summary-line"><span>Standard shipping</span><span>{{ shipping_cents|money }}</span></div>
-  <div class="summary-line total"><span>Total</span><span>{{ total_cents|money }}</span></div>
-</aside>
+  <form method="post" class="form-card">
+    <label>Name<input required name="customer_name" autocomplete="name"></label>
+    <label>Email<input required type="email" name="customer_email" autocomplete="email"></label>
+
+    <fieldset class="fulfillment-options" id="fulfillment-options">
+      <legend>Fulfillment method</legend>
+      <p class="muted fulfillment-help">Choose delivery or collect your order at the store.</p>
+      {% for option in fulfillment_options %}
+      <label class="fulfillment-choice">
+        <input type="radio" name="fulfillment_method" value="{{ option.code }}"
+               data-fee-cents="{{ option.fee_cents }}"
+               data-requires-address="{{ 'true' if option.requires_address else 'false' }}"
+               data-label="{{ option.label }}"
+               {% if option.code == selected_fulfillment.code %}checked{% endif %}>
+        <span class="fulfillment-choice-name">{{ option.label }}</span>
+        <strong>{{ option.fee_cents|money }}</strong>
+      </label>
+      {% endfor %}
+    </fieldset>
+
+    <div id="shipping-address-field" {% if not selected_fulfillment.requires_address %}hidden{% endif %}>
+      <label>Shipping address
+        <textarea id="shipping-address" name="shipping_address" rows="4" autocomplete="street-address"
+          {% if selected_fulfillment.requires_address %}required{% endif %}></textarea>
+      </label>
+    </div>
+
+    <label>Test payment token<input required name="payment_token" value="tok_success"><small>Use <code>tok_fail</code> to simulate a declined payment.</small></label>
+    <button>Place order</button>
+  </form>
+
+  <aside class="summary-card" aria-label="Order summary">
+    <h3>Order summary</h3>
+    {% for line in lines %}<div class="summary-line"><span>{{ line.quantity }} × {{ line.product.name }}</span><span>{{ line.line_total_cents|money }}</span></div>{% endfor %}
+    <hr>
+    <div class="summary-line"><span>Subtotal</span><span>{{ subtotal_cents|money }}</span></div>
+    <div class="summary-line"><span id="fulfillment-fee-label">{{ selected_fulfillment.label }}</span><span id="fulfillment-fee">{{ shipping_cents|money }}</span></div>
+    <div class="summary-line total"><span>Total</span><span id="checkout-total" data-subtotal-cents="{{ subtotal_cents }}">{{ total_cents|money }}</span></div>
+    <p class="muted fulfillment-help">All prices in MXN. Final amount is validated on the server.</p>
+  </aside>
 </div>
+<script>
+(() => {
+  const radios = document.querySelectorAll('input[name="fulfillment_method"]');
+  const addressField = document.getElementById('shipping-address-field');
+  const addressInput = document.getElementById('shipping-address');
+  const feeLabel = document.getElementById('fulfillment-fee-label');
+  const feeValue = document.getElementById('fulfillment-fee');
+  const total = document.getElementById('checkout-total');
+  const subtotalCents = Number(total.dataset.subtotalCents);
+  const money = cents => '$' + (cents / 100).toLocaleString('en-US', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  });
+
+  function updateFulfillment() {
+    const selected = document.querySelector('input[name="fulfillment_method"]:checked');
+    if (!selected) return;
+    const requiresAddress = selected.dataset.requiresAddress === 'true';
+    addressField.hidden = !requiresAddress;
+    addressInput.required = requiresAddress;
+    feeLabel.textContent = selected.dataset.label;
+    const feeCents = Number(selected.dataset.feeCents);
+    feeValue.textContent = money(feeCents);
+    total.textContent = money(subtotalCents + feeCents);
+  }
+
+  radios.forEach(radio => radio.addEventListener('change', updateFulfillment));
+  updateFulfillment();
+})();
+</script>
 {% endblock %}

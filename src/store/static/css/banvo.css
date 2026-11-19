@@ -33,3 +33,17 @@ button:focus-visible,a:focus-visible { outline:3px solid #8aacff; outline-offset
   .site-header { padding:0 4vw; }
   nav { gap:12px; font-size:.88rem; }
 }
+
+/* Milestone 2: selectable fulfillment options. */
+.fulfillment-options { margin:0 0 18px; padding:0; border:0; min-width:0; }
+.fulfillment-options legend { font-weight:800; margin-bottom:4px; }
+.fulfillment-help { font-size:.87rem; margin:6px 0 14px; }
+.fulfillment-choice { display:flex; align-items:center; gap:12px; padding:14px 15px;
+  border:1px solid var(--line); border-radius:12px; margin-bottom:10px;
+  cursor:pointer; background:#fbfcff; font-weight:500; }
+.fulfillment-choice:hover { border-color:var(--accent); }
+.fulfillment-choice:has(input:checked) { border-color:var(--accent); background:#eef2ff; box-shadow:inset 0 0 0 1px var(--accent); }
+.fulfillment-choice input[type="radio"] { width:18px; height:18px; margin:0; accent-color:var(--accent); flex:none; }
+.fulfillment-choice-name { flex:1; }
+.fulfillment-choice strong { color:var(--accent-dark); white-space:nowrap; }
+#shipping-address-field[hidden] { display:none; }

@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from ..db import get_session
+from ..fulfillment import get_fulfillment_option
 from ..models import Order
 
 bp = Blueprint("orders", __name__, url_prefix="/orders")
@@ -25,4 +26,8 @@ def order_detail(order_id: int):
     )
     if order is None:
         abort(404)
-    return render_template("order_confirmation.html", order=order)
+    option = get_fulfillment_option(order.fulfillment_method)
+    fulfillment_label = option.label if option else order.fulfillment_method.replace("_", " ").title()
+    return render_template(
+        "order_confirmation.html", order=order, fulfillment_label=fulfillment_label
+    )

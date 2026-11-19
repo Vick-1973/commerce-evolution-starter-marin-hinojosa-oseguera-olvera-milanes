@@ -9,9 +9,9 @@
   {% endfor %}
   <hr>
   <div class="summary-line"><span>Subtotal</span><span>{{ order.subtotal_cents|money }}</span></div>
-  <div class="summary-line"><span>Standard shipping</span><span>{{ order.shipping_cents|money }}</span></div>
+  <div class="summary-line"><span>{{ fulfillment_label }}</span><span>{{ order.shipping_cents|money }}</span></div>
   <div class="summary-line total"><span>Total</span><span>{{ order.total_cents|money }}</span></div>
 </section>
-<aside class="summary-card"><h3>Details</h3><p><strong>{{ order.customer_email }}</strong></p><p>{{ order.shipping_address }}</p><p class="muted">Payment: {{ order.payment_reference }}<br>Status: {{ order.status }}</p></aside>
+<aside class="summary-card"><h3>Details</h3><p><strong>{{ order.customer_email }}</strong></p><p><strong>Fulfillment:</strong> {{ fulfillment_label }}</p>{% if order.shipping_address %}<p><strong>Ship to:</strong> {{ order.shipping_address }}</p>{% else %}<p><strong>Store Pickup:</strong> No shipping address required.</p>{% endif %}<p class="muted">Payment: {{ order.payment_reference }}<br>Status: {{ order.status }}</p></aside>
 </div>
 {% endblock %}

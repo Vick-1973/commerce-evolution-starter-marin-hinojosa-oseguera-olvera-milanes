@@ -6,6 +6,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
+from .fulfillment import DEFAULT_FULFILLMENT_CODE
 
 
 class Product(Base):
@@ -27,7 +28,13 @@ class Order(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     customer_name: Mapped[str] = mapped_column(String(120))
     customer_email: Mapped[str] = mapped_column(String(160))
+    # Empty string is allowed for Store Pickup (no shipping address).
     shipping_address: Mapped[str] = mapped_column(Text)
+    fulfillment_method: Mapped[str] = mapped_column(
+        String(40), nullable=False,
+        default=DEFAULT_FULFILLMENT_CODE,
+        server_default=DEFAULT_FULFILLMENT_CODE,
+    )
     subtotal_cents: Mapped[int] = mapped_column(Integer)
     shipping_cents: Mapped[int] = mapped_column(Integer)
     total_cents: Mapped[int] = mapped_column(Integer)

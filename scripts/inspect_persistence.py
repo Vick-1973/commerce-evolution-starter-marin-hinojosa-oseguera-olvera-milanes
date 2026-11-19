@@ -23,7 +23,7 @@ def main() -> None:
         tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         for table, sql in [
             ("products", "SELECT id, sku, name, stock_quantity FROM products ORDER BY id"),
-            ("orders", "SELECT id, customer_name, total_cents, payment_reference, status FROM orders ORDER BY id DESC"),
+            ("orders", "SELECT id, customer_name, fulfillment_method, shipping_address, shipping_cents, total_cents, payment_reference, status FROM orders ORDER BY id DESC"),
             ("order_items", "SELECT order_id, sku, product_name, quantity, unit_price_cents FROM order_items ORDER BY id DESC"),
         ]:
             print(f"\n===== {table.upper()} =====")

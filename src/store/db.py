@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from flask import Flask, current_app, g
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 
@@ -29,6 +29,16 @@ def init_app(app: Flask) -> None:
         expire_on_commit=False,
     )
     Base.metadata.create_all(engine)
+    # SQLAlchemy create_all does not add new columns to an existing SQLite table.
+    # Preserve historical BANVO orders when upgrading from M1 rather than reset DB.
+    if "fulfillment_method" not in {
+        column["name"] for column in inspect(engine).get_columns("orders")
+    }:
+        with engine.begin() as connection:
+            connection.execute(text(
+                "ALTER TABLE orders ADD COLUMN fulfillment_method "
+                "VARCHAR(40) NOT NULL DEFAULT 'standard_shipping'"
+            ))
     app.teardown_appcontext(close_session)
 
 

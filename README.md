@@ -170,3 +170,20 @@ Before assuming the starter is broken, verify:
 6. `python -m pytest` passes locally.
 
 If something still fails, capture the exact command and complete error output before asking for help.
+
+# BANVO — Milestone 2 fulfillment options
+
+The checkout now supports **Standard Shipping ($99 MXN)**, **Express Shipping ($199 MXN)**, and **Store Pickup ($0 MXN)**. Standard/Express require an address; pickup does not. Fees are computed on the server and the selected method is saved with the order.
+
+Start with your normal environment (Windows: `.\.venv\Scripts\Activate.ps1`), then run:
+
+```powershell
+python -m pip install -e ".[dev]"
+python seed.py
+python -m pytest -v
+flask --app store run --debug
+```
+
+Add a product, go to `/checkout`, choose each fulfillment option, then use `tok_success` or `tok_fail` to validate the flow. Run `python scripts/inspect_persistence.py` to see the stored `fulfillment_method`, address, shipping fee, order and stock. **Do not reset** a development database if you need its historical orders: M2 adds the order column automatically on startup. Keep Flask stopped for database maintenance.
+
+See [`docs/milestone-2.md`](docs/milestone-2.md) for the before/after design, decisions and trade-offs, and tests.

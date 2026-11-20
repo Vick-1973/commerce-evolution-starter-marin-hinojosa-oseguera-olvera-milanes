@@ -100,3 +100,5 @@ Existing cart, catalog, order history, payment tokens, item snapshots, and inven
 - **16 — Strategy:** consider interchangeable algorithms when behavior *actually varies*; fixed fees and a boolean do not yet warrant distinct strategy implementations.
 - **20 — Patterns in Practice:** classify patterns by the pressure they remove; Python can express variability without textbook class hierarchies.
 
+## 8. Meaningful AI use
+ChatGPT (OpenAI) was used to help with the automated test to ensure everything was working correctly; everything was done using the course’s presentations as guidance.

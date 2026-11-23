@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -24,8 +24,17 @@ class Product(Base):
 
 class Order(Base):
     __tablename__ = "orders"
+    # Nullable external IDs permit many storefront orders; marketplace IDs are unique.
+    __table_args__ = (
+        Index("uq_orders_source_external", "source", "external_order_id", unique=True),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    source: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="storefront", server_default="storefront",
+    )
+    external_order_id: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    external_payload_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
     customer_name: Mapped[str] = mapped_column(String(120))
     customer_email: Mapped[str] = mapped_column(String(160))
     # Empty string is allowed for Store Pickup (no shipping address).

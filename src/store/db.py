@@ -39,6 +39,28 @@ def init_app(app: Flask) -> None:
                 "ALTER TABLE orders ADD COLUMN fulfillment_method "
                 "VARCHAR(40) NOT NULL DEFAULT 'standard_shipping'"
             ))
+    # M3: additive migration of existing M1/M2 SQLite databases.
+    # Do not reset or re-seed: historical payments, orders and inventory survive.
+    current_columns = {col["name"] for col in inspect(engine).get_columns("orders")}
+    with engine.begin() as connection:
+        if "source" not in current_columns:
+            connection.execute(text(
+                "ALTER TABLE orders ADD COLUMN source VARCHAR(20) "
+                "NOT NULL DEFAULT 'storefront'"
+            ))
+        if "external_order_id" not in current_columns:
+            connection.execute(text(
+                "ALTER TABLE orders ADD COLUMN external_order_id VARCHAR(120)"
+            ))
+        if "external_payload_hash" not in current_columns:
+            connection.execute(text(
+                "ALTER TABLE orders ADD COLUMN external_payload_hash VARCHAR(64)"
+            ))
+        # SQLAlchemy create_all cannot backfill indexes on existing tables.
+        connection.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_orders_source_external "
+            "ON orders(source, external_order_id)"
+        ))
     app.teardown_appcontext(close_session)
 
 

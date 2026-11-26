@@ -12,6 +12,6 @@
   <div class="summary-line"><span>{{ fulfillment_label }}</span><span>{{ order.shipping_cents|money }}</span></div>
   <div class="summary-line total"><span>Total</span><span>{{ order.total_cents|money }}</span></div>
 </section>
-<aside class="summary-card"><h3>Details</h3><p><strong>{{ order.customer_email }}</strong></p><p><strong>Fulfillment:</strong> {{ fulfillment_label }}</p>{% if order.shipping_address %}<p><strong>Ship to:</strong> {{ order.shipping_address }}</p>{% else %}<p><strong>Store Pickup:</strong> No shipping address required.</p>{% endif %}<p class="muted">Payment: {{ order.payment_reference }}<br>Status: {{ order.status }}</p></aside>
+<aside class="summary-card"><h3>Details</h3><p><strong>{{ order.customer_email }}</strong></p><p><strong>Fulfillment:</strong> {{ fulfillment_label }}</p><p><strong>Order source:</strong> {{ order.source|title }}</p>{% if order.external_order_id %}<p><strong>Marketplace order ID:</strong> {{ order.external_order_id }}</p>{% endif %}{% if order.shipping_address %}<p><strong>Ship to:</strong> {{ order.shipping_address }}</p>{% else %}<p><strong>Store Pickup:</strong> No shipping address required.</p>{% endif %}<p class="muted">Payment: {{ order.payment_reference }}<br>Status: {{ order.status }}</p></aside>
 </div>
 {% endblock %}

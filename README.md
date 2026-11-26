@@ -187,3 +187,44 @@ flask --app store run --debug
 Add a product, go to `/checkout`, choose each fulfillment option, then use `tok_success` or `tok_fail` to validate the flow. Run `python scripts/inspect_persistence.py` to see the stored `fulfillment_method`, address, shipping fee, order and stock. **Do not reset** a development database if you need its historical orders: M2 adds the order column automatically on startup. Keep Flask stopped for database maintenance.
 
 See [`docs/milestone-2.md`](docs/milestone-2.md) for the before/after design, decisions and trade-offs, and tests.
+
+# BANVO — Milestone 3: Marketplace ordering
+
+The app has **two entry points**, storefront checkout and `POST /api/marketplace/orders`, using the shared `src/store/ordering.py` service for authoritative SKU prices, fulfillment pricing, order persistence, order items and inventory updates. The marketplace payment is already complete; the integration does **not** invoke the web payment processor.
+
+M3 also introduces **Strategy** implementations in `src/store/fulfillment.py`: `FlatRateDeliveryStrategy` (Standard/Express) and `StorePickupStrategy` (Pickup). These are composed with the option registry so new method behavior does not become a long set of checkout conditions. See [`docs/milestone-3.md`](docs/milestone-3.md).
+
+## Run and test
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"
+python -m pytest -v
+python seed.py  # Only seeds when the product table is empty; never resets old orders
+$env:MARKETPLACE_API_KEY = "local-demo-key" # development demo; set a real secret for deployment
+flask --app store run --debug
+```
+
+**In a second PowerShell terminal**, use these commands for a real marketplace order (the server terminal keeps Flask running):
+
+```powershell
+$uri = "http://127.0.0.1:5000/api/marketplace/orders"
+$headers = @{ "X-Marketplace-Key" = "local-demo-key" }
+$body = @{
+    external_order_id = "BANVO-MP-1001"
+    buyer = @{ name = "Marketplace Buyer"; email = "buyer@example.com" }
+    shipping = @{ method = "store_pickup"; address = "" }
+    items = @( @{ sku = "BNV-MOU-002"; quantity = 1 } )
+} | ConvertTo-Json -Depth 6
+
+Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -ContentType "application/json" -Body $body
+# Repeat the exact same command: replayed=true and the order_id stays unchanged
+Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -ContentType "application/json" -Body $body
+python scripts/inspect_persistence.py
+```
+
+Create a web order with `tok_success` to demonstrate the storefront still charges normally. Use `tok_fail` to verify declined payments do not persist orders.
+
+**HTTP behavior:** 201 new order; 200 identical retry; 409 duplicate external ID with conflicting content or insufficient inventory; 400 invalid request; 401 bad key; 503 no server integration key; 415 non-JSON. Never submit an externally controlled `price_cents` or `payment_token` and expect it to override server prices/payment behavior. The integration secret is an academic demonstration credential; use a real authenticated and signed provider integration for production.
+
+**Persistence:** M3 automatically adds `source`, `external_order_id` and `external_payload_hash` to existing SQLite `orders` tables and adds a unique index on `(source, external_order_id)`. Historical orders and inventories are retained. **Do not run `reset_db.py` to migrate.**
